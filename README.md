@@ -3,6 +3,7 @@
 Frontend moderno de um sistema de controle financeiro criado com Lovable.
 
 ![Preview](https://github.com/moisesvinicius0101/tracflow-easy-money/blob/main/img-light.png)
+![Preview](https://github.com/moisesvinicius0101/tracflow-easy-money/blob/main/img-night.png)
 
 ---
 
