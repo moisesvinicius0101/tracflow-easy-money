@@ -1,60 +1,83 @@
+
+
 import { useEffect, useState } from "react";
+import axios from "axios";
+
 
 export type Transaction = {
-  id: string;
-  name: string;
+  id: number;
+  description: string;
   amount: number;
-  type: "income" | "expense";
-  date: string; // ISO yyyy-mm-dd
+  type: "entrada" | "saida";
+  date: string;
 };
 
-const KEY = "fintrack:transactions:v1";
+type Summary = {
+  saldo_total: number;
+  entradas: number;
+  saidas: number;
+};
 
-function load(): Transaction[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as Transaction[];
-  } catch {
-    return [];
-  }
-}
-
-function save(items: Transaction[]) {
-  localStorage.setItem(KEY, JSON.stringify(items));
-}
-
-let listeners = new Set<() => void>();
+const API_URL = "http://localhost:8000/transaction";
 
 export function useTransactions() {
   const [items, setItems] = useState<Transaction[]>([]);
-  const [hydrated, setHydrated] = useState(false);
+  const [summary, setSummary] = useState<Summary>({
+    saldo_total: 0,
+    entradas: 0,
+    saidas: 0,
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  async function fetchData() {
+    try {
+      setLoading(true);
+
+      const [resList, resSummary] = await Promise.all([
+        axios.get(`${API_URL}/`),
+        axios.get(`${API_URL}/summary`),
+      ]);
+
+      setItems(resList.data);
+      setSummary(resSummary.data);
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    setItems(load());
-    setHydrated(true);
-    const cb = () => setItems(load());
-    listeners.add(cb);
-    return () => {
-      listeners.delete(cb);
-    };
+    fetchData();
   }, []);
 
-  const persist = (next: Transaction[]) => {
-    save(next);
-    setItems(next);
-    listeners.forEach((l) => l());
-  };
+  async function add(transaction: Omit<Transaction, "id">) {
+    try {
+      await axios.post(`${API_URL}/`, transaction);
 
-  const add = (t: Omit<Transaction, "id">) => {
-    const next = [{ ...t, id: crypto.randomUUID() }, ...load()];
-    persist(next);
-  };
+      await fetchData();
+    } catch (error) {
+      console.error("Erro ao adicionar:", error);
+    }
+  }
 
-  const remove = (id: string) => {
-    persist(load().filter((t) => t.id !== id));
-  };
+  async function remove(id: number) {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
 
-  return { items, hydrated, add, remove };
+      setItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Erro ao remover:", error);
+    }
+  }
+
+  return {
+    items,
+    summary,
+    loading,
+    add,
+    remove,
+    refresh: fetchData,
+  };
 }
