@@ -81,6 +81,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "FinTrack — Simple Personal Finance Tracker" },
+      { name: "twitter:description", content: "Track your income and expenses with a fast, minimal personal finance app." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5c13bf5b-03a8-4ed5-b1b7-d5b85684a352/id-preview-dda5ead1--7e131958-fc5a-450e-bbfd-4e5fa088e50f.lovable.app-1778824340675.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5c13bf5b-03a8-4ed5-b1b7-d5b85684a352/id-preview-dda5ead1--7e131958-fc5a-450e-bbfd-4e5fa088e50f.lovable.app-1778824340675.png" },
     ],
     links: [
       {
