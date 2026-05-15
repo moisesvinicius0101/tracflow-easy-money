@@ -4,9 +4,15 @@ const UPSTREAM = "https://tracflow-easy-money-api.onrender.com/transaction";
 
 async function proxy(request: Request, splat: string) {
   const url = `${UPSTREAM}/${splat ?? ""}`;
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  const auth = request.headers.get("authorization");
+  if (auth) headers.Authorization = auth;
   const init: RequestInit = {
     method: request.method,
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    headers,
   };
   if (request.method !== "GET" && request.method !== "HEAD") {
     const body = await request.text();
