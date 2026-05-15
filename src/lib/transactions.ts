@@ -1,7 +1,7 @@
 
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "./api";
 
 
 export type Transaction = {
@@ -35,8 +35,8 @@ export function useTransactions() {
       setLoading(true);
 
       const [resList, resSummary] = await Promise.all([
-        axios.get(`${API_URL}/`),
-        axios.get(`${API_URL}/summary`),
+        api.get(`${API_URL}/`),
+        api.get(`${API_URL}/summary`),
       ]);
 
       setItems(resList.data);
@@ -54,7 +54,7 @@ export function useTransactions() {
 
   async function add(transaction: Omit<Transaction, "id">) {
     try {
-      await axios.post(`${API_URL}/`, transaction);
+      await api.post(`${API_URL}/`, transaction);
 
       await fetchData();
     } catch (error) {
@@ -64,7 +64,7 @@ export function useTransactions() {
 
   async function remove(id: number) {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await api.delete(`${API_URL}/${id}`);
 
       setItems((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
