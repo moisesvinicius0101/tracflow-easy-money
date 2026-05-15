@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Plus } from "@phosphor-icons/react";
+import { Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
