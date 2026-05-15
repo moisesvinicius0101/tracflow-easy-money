@@ -18,7 +18,7 @@ type Summary = {
   saidas: number;
 };
 
-const API_URL = "http://localhost:8000/transaction";
+const API_URL = "https://tracflow-easy-money-api.onrender.com/transaction";
 
 export function useTransactions() {
   const [items, setItems] = useState<Transaction[]>([]);
