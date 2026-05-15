@@ -1,6 +1,6 @@
 
 import { createFileRoute } from "@tanstack/react-router";
-import { Trash } from "@phosphor-icons/react";
+import { Trash2 } from "lucide-react";
 
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -89,7 +89,7 @@ function Index() {
                           {formatCurrency(Number(t.amount))}
                         </span>
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(t.id, t.description)}>
-                          <Trash className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </li>
