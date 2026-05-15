@@ -12,16 +12,12 @@ import { useTransactions } from "../lib/transactions";
 import { AddTransactionDialog } from "../components/add-transaction-dialog";
 import { ThemeToggle } from "../components/theme-toggle";
 
-export const Route = createFileRoute("/")({
-  component: Index,
-});
-
 function Index() {
   const { items, summary, loading, remove, refresh } = useTransactions();
 
   const handleDelete = async (id: number, description: string) => {
     await remove(id);
-    await refresh();  // ← adiciona essa linha
+    await refresh();
     toast.success(`"${description}" removida`);
   };
 
@@ -48,7 +44,7 @@ function Index() {
             <CardContent className="p-5">
               <p className="text-sm text-muted-foreground">Saldo total</p>
               <p className={`mt-2 text-3xl font-semibold ${summary.saldo_total < 0 ? "text-destructive" : "text-foreground"}`}>
-                {formatCurrency(summary.saldo_total)}
+                {formatCurrency(Number(summary.saldo_total))}
               </p>
             </CardContent>
           </Card>
@@ -57,7 +53,7 @@ function Index() {
             <CardContent className="p-4">
               <p className="text-sm text-muted-foreground">Entradas</p>
               <p className="mt-1 text-xl font-semibold text-success">
-                {formatCurrency(summary.entradas)}
+                {formatCurrency(Number(summary.entradas))}
               </p>
             </CardContent>
           </Card>
@@ -66,7 +62,7 @@ function Index() {
             <CardContent className="p-4">
               <p className="text-sm text-muted-foreground">Saídas</p>
               <p className="mt-1 text-xl font-semibold text-destructive">
-                {formatCurrency(summary.saidas)}
+                {formatCurrency(Number(summary.saidas))}
               </p>
             </CardContent>
           </Card>
@@ -90,7 +86,7 @@ function Index() {
                       <div className="flex items-center gap-3">
                         <span className={`font-semibold ${t.type === "entrada" ? "text-success" : "text-destructive"}`}>
                           {t.type === "entrada" ? "+" : "-"}
-                          {formatCurrency(t.amount)}
+                          {formatCurrency(Number(t.amount))}
                         </span>
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(t.id, t.description)}>
                           <Trash className="h-4 w-4" />
@@ -107,3 +103,7 @@ function Index() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/")({
+  component: Index,
+});
