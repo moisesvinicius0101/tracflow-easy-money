@@ -1,6 +1,6 @@
 
 import { createFileRoute } from "@tanstack/react-router";
-import { Trash2 } from "lucide-react";
+import { LogOut, Trash2 } from "lucide-react";
 
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -11,9 +11,11 @@ import { formatCurrency, formatDate } from "../lib/utils";
 import { useTransactions } from "../lib/transactions";
 import { AddTransactionDialog } from "../components/add-transaction-dialog";
 import { ThemeToggle } from "../components/theme-toggle";
+import { ProtectedRoute, useAuth } from "../lib/auth-context";
 
-function Index() {
+function Dashboard() {
   const { items, summary, loading, remove, refresh } = useTransactions();
+  const { user, logout } = useAuth();
 
   const handleDelete = async (id: number, description: string) => {
     await remove(id);
@@ -29,11 +31,18 @@ function Index() {
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold">FinTrack</span>
-            <span className="text-sm text-muted-foreground">Personal finance</span>
+            {user && (
+              <span className="hidden text-sm text-muted-foreground sm:inline">
+                Olá, {user.username}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <AddTransactionDialog onSuccess={refresh} />
+            <Button variant="ghost" size="icon" onClick={logout} aria-label="Sair">
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </header>
@@ -105,5 +114,9 @@ function Index() {
 }
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: () => (
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  ),
 });
