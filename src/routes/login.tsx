@@ -12,6 +12,7 @@ import { useAuth } from "../lib/auth-context";
 function LoginPage() {
   const { login, token, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -22,13 +23,13 @@ function LoginPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !password) {
-      toast.error("Preencha email e senha");
+    if (!username || !email || !password) {
+      toast.error("Preencha usuário, email e senha");
       return;
     }
     try {
       setSubmitting(true);
-      await login(email, password);
+      await login({ username, email, password });
       toast.success("Bem-vindo de volta!");
       navigate({ to: "/" });
     } catch (err: any) {
@@ -51,6 +52,10 @@ function LoginPage() {
             </p>
           </div>
           <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Nome de usuário</Label>
+              <Input id="username" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="moises" />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@email.com" />

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const UPSTREAM = "https://tracflow-easy-money-api.onrender.com/auth";
+const UPSTREAM = "https://tracflow-easy-money-api-2.onrender.com/auth";
 
 async function proxy(request: Request, splat: string) {
   const url = `${UPSTREAM}/${splat ?? ""}`;
