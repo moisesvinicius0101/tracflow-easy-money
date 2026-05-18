@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { PasswordInput } from "../components/password-input";
 import { Card, CardContent } from "../components/ui/card";
 import { Toaster } from "../components/ui/sonner";
 import { useAuth } from "../lib/auth-context";
@@ -37,8 +38,17 @@ function RegisterPage() {
       toast.success("Conta criada com sucesso!");
       navigate({ to: "/" });
     } catch (err: any) {
-      const msg = err?.response?.data?.detail ?? "Não foi possível criar a conta";
-      toast.error(typeof msg === "string" ? msg : "Erro no cadastro");
+      const status = err?.response?.status;
+      const detail = err?.response?.data?.detail;
+      const msg =
+        typeof detail === "string"
+          ? detail
+          : status === 500
+            ? "Erro no servidor (500). O backend está com problema no cadastro — verifique os logs do Render."
+            : status
+              ? `Não foi possível criar a conta (HTTP ${status})`
+              : "Não foi possível conectar ao servidor";
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
@@ -66,7 +76,7 @@ function RegisterPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" />
+              <PasswordInput id="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" />
             </div>
             <Button type="submit" className="w-full" disabled={submitting}>
               {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}

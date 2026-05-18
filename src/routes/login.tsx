@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { Loader2, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { Input } from "../components/ui/input";
+import { PasswordInput } from "../components/password-input";
 import { Card, CardContent } from "../components/ui/card";
 import { Toaster } from "../components/ui/sonner";
 import { useAuth } from "../lib/auth-context";
@@ -13,7 +14,6 @@ function LoginPage() {
   const { login, token, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -23,18 +23,27 @@ function LoginPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!username || !email || !password) {
-      toast.error("Preencha usuário, email e senha");
+    if (!username || !password) {
+      toast.error("Preencha usuário e senha");
       return;
     }
     try {
       setSubmitting(true);
-      await login({ username, email, password });
+      await login({ username, password });
       toast.success("Bem-vindo de volta!");
       navigate({ to: "/" });
     } catch (err: any) {
-      const msg = err?.response?.data?.detail ?? "Email ou senha inválidos";
-      toast.error(typeof msg === "string" ? msg : "Erro ao fazer login");
+      const status = err?.response?.status;
+      const detail = err?.response?.data?.detail;
+      const msg =
+        typeof detail === "string"
+          ? detail
+          : status === 401
+            ? "Usuário ou senha inválidos"
+            : status
+              ? `Erro ao fazer login (HTTP ${status})`
+              : "Não foi possível conectar ao servidor";
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
@@ -57,12 +66,8 @@ function LoginPage() {
               <Input id="username" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="moises" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@email.com" />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+              <PasswordInput id="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
             </div>
             <Button type="submit" className="w-full" disabled={submitting}>
               {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
